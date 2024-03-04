@@ -1,4 +1,5 @@
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.llms import Ollama
+from langchain_community.embeddings import OllamaEmbeddings
 import os
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -25,13 +26,13 @@ def get_documents_from_web(url):
     return splitDocs
 
 def create_vector_store(docs):
-    embedding = OpenAIEmbeddings()
+    embedding = OllamaEmbeddings()
     vectoreStore = FAISS.from_documents(docs, embedding=embedding)
     return vectoreStore
 
 def create_chain(vectorStore):
-    model = ChatOpenAI(
-        model="gpt-3.5-turbo",
+    model = Ollama(
+        model="mistral:latest",
         temperature=0.4
     )
 
@@ -73,7 +74,7 @@ def process_chat(chain, question, chat_history):
 
 if __name__ == '__main__':
     print("here") # doesn't prompt without this?
-    docs = get_documents_from_web("https://python.langchain.com/docs/expression_language/")
+    docs = get_documents_from_web("https://docs.kanaries.net/topics/LangChain/langchain-document-loader")
     vectorStore = create_vector_store(docs)
     chain = create_chain(vectorStore)
 
